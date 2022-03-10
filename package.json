@@ -1,0 +1,24 @@
+{
+  "name": "web-enterprise",
+  "version": "1.0.0",
+  "description": "Web Enterprise Assesment",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/D3VoS/web-enterprise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/D3VoS/web-enterprise/issues"
+  },
+  "homepage": "https://github.com/D3VoS/web-enterprise#readme"
+}
