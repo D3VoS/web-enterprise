@@ -1,7 +1,46 @@
 <%- include('partials/header') -%>
 
+<h1> Login </h1>
+<form id="registerForm">
+	<div class="mb-3">
+		<label for="InputEmail" class="form-label">Email address</label>
+		<input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+	</div>
+	<div class="mb-3">
+		<label for="InputPassword" class="form-label">Password</label>
+		<input type="password" class="form-control" id="InputPassword">
+	</div>
+	<button type="submit" class="btn btn-primary" onclick="SendReq();">Submit</button>
+</form>
 
-	<h1> Login </h1>
+<script>
+	function SendReq(){
+	email = document.getElementById("InputEmail").value;
+	pass = document.getElementById("InputPassword").value;
+	console.log(email)
+	$.post("", {"email": email, "pass": pass},function(data, status, jqXHR){
+		console.log(status)
+		if(status="success"){
+			window.location = "../../"
+		}
+	})
+}	
+</script>
 
+<script>
+	//Fix for page reload found https://stackoverflow.com/questions/38374549/xhr-failed-loading-post
+	window.addEventListener("load", function () {
+	   //not jquery!
+	   // Access the form element...
+	   var form = document.getElementById("registerForm");
+	   
+	   // ...and take over its submit event.
+	   form.addEventListener("submit", function (event) {
+		   event.preventDefault(); // prevent form submission and reloading the page.
+   
+		   //your code to validate or do what you need with the form.
+	   });
+   });
+   </script>
 
 <%- include('partials/footer') -%>
