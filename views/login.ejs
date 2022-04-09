@@ -24,7 +24,7 @@
 	$.post("", {"email": email, "pass": pass},function(data, status, jqXHR){
 		console.log(status)
 		if(status == "success"){
-			console.log("it works")
+			window.location = "/"
 		}
 	})
 }	

@@ -39,9 +39,9 @@ app.use(methodOverride('_method'))
 
 app.use(cookieParser())
 
-app.route('/').get(checkAuthenticated, function(req,res){
-  console.log(typeof(req.user))
-  res.render('index', {"email": req.user.email})
+app.route('/').get(checkAuthenticated, async function(req,res){
+  result = await req.user.exec()
+  res.render('index', {"email": result.email})
 })
 
 function checkAuthenticated(req, res, next){

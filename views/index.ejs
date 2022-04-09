@@ -1,6 +1,8 @@
 <%- include('partials/header', {email: email}); -%>
 
 
-	<h1> Hello <% email %> </h1>
-
+	<h1> Hello <%= email %> </h1>
+	<% if(messages.error) { %>
+		<%= messages.error %>
+		<% } %>
 <%- include('partials/footer') -%>

@@ -38,8 +38,10 @@ router.post('/login', passport.authenticate('local', {
 	failureFlash: true
 	}));
 
-router.get('/profile',checkAuthenticated, (req,res) =>{
-	res.render('profile', {"email": req.user})
+router.get('/profile',checkAuthenticated, async (req,res) =>{
+	result = await req.user.exec()
+	console.log(result.email)
+	res.render('profile', {"email": result})
 })
 
 router.get('/logout', (req,res)=>{
