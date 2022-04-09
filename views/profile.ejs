@@ -1,8 +1,23 @@
-<%- include('partials/header', {email: result.email}); -%>
+<%- include('partials/header', {result: result}); -%>
 
 
-	<h1> <%= result.email %>'s Profile </h1>
+	<h1> <%= result.displayName %>'s Profile </h1>
 
+	<br>
+	E-Mail : <%= result.email %>
+	<br>
+	Joined : <%= result.createdAt %>
+	<br>
+	Last Updated: <%= result.updatedAt %>
+	<br>
+	<br>
+	<br>
+	<form id="updateForm">
+		<label for="InputDisplayName" class="form-label">Display Name</label>
+			<input type="text" class="form-control" id="InputDisplayName">
+		<button type="submit" class="btn btn-info" onclick="updateDisplayName();">Update Display Name</button>
+	</form>
+	<br>
 	<form id="deleteForm">
 		<button type="submit" class="btn btn-danger" onclick="deleteAccount();">Delete my account</button>
 	</form>
@@ -13,10 +28,19 @@
 			console.log(status)
 			if(status == "success"){
 				alert("Your account has been sucessfully deleted")
-				window.location = "/"
+				window.location.replace = "/"
 			}
 		}
 		)}
 		
+		function updateDisplayName(){
+			displayName = document.getElementById("InputDisplayName").value
+			$.post("",{"message": "update", "displayName": displayName}, function(data, status, jqXHR){
+				if(data == "success"){
+					alert("Your Display name has been updated")
+					window.location.reload()
+				}
+			})
+		}
 		</script>
 <%- include('partials/footer') -%>

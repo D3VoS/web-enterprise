@@ -32,7 +32,7 @@ router.get('/login', checkNotAuthenticated, (req,res) =>{
 	res.render('login');
   });
 
-router.post('/login', passport.authenticate('local', {
+router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 	successRedirect: '/',
 	failureRedirect: '/accounts/login',
 	failureFlash: true
@@ -40,8 +40,8 @@ router.post('/login', passport.authenticate('local', {
 
 router.get('/profile',checkAuthenticated, async (req,res) =>{
 	result = await req.user.exec()
-	console.log(result.email)
-	res.render('profile', {"email": result})
+	console.log(result)
+	res.render('profile', {"result": result})
 })
 
 router.post('/profile', checkAuthenticated, async (req, res) =>{
@@ -49,13 +49,18 @@ router.post('/profile', checkAuthenticated, async (req, res) =>{
 		result = await req.user.exec()
 		await User.deleteOne({"_id":result._id})
 		console.log("User deleted")
-		req.session.destroy();
-		res.redirect('/')
+		req.logout()
+		res.status(200).send("success")
+	} else if (req.body.message === "update"){
+		result = await req.user.exec()
+		doc = await User.findOneAndUpdate({"_id": result._id}, {"displayName": req.body.displayName, "updatedAt": Date.now()}, {new: true})
+		console.log("User Updated")
+		res.status(200).send("success")
 	}
 })
 
-router.get('/logout', (req,res)=>{
-	req.session.destroy();
+router.get('/logout', checkAuthenticated, (req,res)=>{
+	req.logout()
 	res.redirect('/')
 })
   
@@ -72,7 +77,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
 	} else{
 		// Salts and hashes the password to ensure that it is not in plain text or easily crackable.
 		const hashedPassword = await bcrypt.hash(req.body.pass, 10)
-		var user = await new User({"email": req.body.email, "password": hashedPassword, "admin":false})
+		var user = await new User({"email": req.body.email, "password": hashedPassword, "displayName": req.body.displayName})
 		await user.save()
 		console.log("User Saved")
 		res.send("200")

@@ -11,6 +11,10 @@
 			<label for="InputPassword" class="form-label">Password</label>
 			<input type="password" class="form-control" id="InputPassword">
 		</div>
+		<div class="mb-3">
+			<label for="InputDisplayName" class="form-label">Display Name</label>
+			<input type="text" class="form-control" id="InputDisplayName">
+		</div>
 		<button type="submit" class="btn btn-primary" onclick="SendReq();">Submit</button>
 	</form>
 
@@ -19,8 +23,8 @@
 	function SendReq(){
 	email = document.getElementById("InputEmail").value;
 	pass = document.getElementById("InputPassword").value;
-	console.log(email)
-	$.post("", {"email": email, "pass": pass},function(data, status, jqXHR){
+	displayName = document.getElementById("InputDisplayName").value;
+	$.post("", {"email": email, "pass": pass, "displayName": displayName},function(data, status, jqXHR){
 		console.log(status)
 		if(data == "200"){
 			alert("Account Registered")
