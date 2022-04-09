@@ -1,44 +1,45 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../util/db')
 const mongoose = require("mongoose")
 const User = require('../models/User')
+const bcrypt = require('bcrypt');
+const passport = require('passport')
 const pass = process.env.DBPASS
 mongoose.connect("mongodb+srv://webenterprise:"+pass+"@cluster0.4kxvc.mongodb.net/webenterprise?retryWrites=true&w=majority",()=>{
 	console.log("Database Connected")
 })
 
 
-
-
-router.use((req,res,next) =>{
-	next()
-})
-router.get('/login', (req,res) =>{
-	session = req.session;
-	if (session.userid){
-		res.render('index', {"email": session.userid})
+function checkAuthenticated(req, res, next){
+	if (req.isAuthenticated()){
+		console.log("User Authed")
+	  return next()
 	}
+  
+	return res.redirect('/accounts/login')
+  }
+
+function checkNotAuthenticated(req, res, next){
+	if (req.isAuthenticated()){
+		
+		return res.redirect('/')
+	}
+	console.log("User not authed")
+	next()
+}
+
+router.get('/login', checkNotAuthenticated, (req,res) =>{
 	res.render('login');
   });
 
-router.post('/login', (req,res) =>{
-	db.get().collection('users').findOne({"email": req.body.email, "pass": req.body.pass}).then(result => {
-		if (result){
-			session = req.session;
-			session.userid=req.body.email;
-			console.log(req.session)
-			res.redirect("/")
-		}
-		
-	})
-});
+router.post('/login', passport.authenticate('local', {
+	successRedirect: '/',
+	failureRedirect: '/accounts/login',
+	failureFlash: true
+	}));
 
-router.get('/profile', (req,res) =>{
-	session = req.session
-	if (session.userid){
-		res.render('profile', {"email": session.userid})
-	}
+router.get('/profile',checkAuthenticated, (req,res) =>{
+	res.render('profile', {"email": req.user})
 })
 
 router.get('/logout', (req,res)=>{
@@ -46,28 +47,29 @@ router.get('/logout', (req,res)=>{
 	res.redirect('/')
 })
   
-router.get('/register', (req,res) => {
-	if (req.session.userid){
-		res.redirect('index')
+router.get('/register', checkNotAuthenticated, (req,res) => {
+	res.render('register')
+
+})
+router.post('/register', checkNotAuthenticated, async (req, res) => {
+	try{
+	result = await User.findOne({"email": req.body.email})
+	if(result){
+		console.log("Email already exists")
+		res.send("409")
 	} else{
-		res.render('register')
+		// Salts and hashes the password to ensure that it is not in plain text or easily crackable.
+		const hashedPassword = await bcrypt.hash(req.body.pass, 10)
+		var user = await new User({"email": req.body.email, "password": hashedPassword, "admin":false})
+		await user.save()
+		console.log("User Saved")
+		res.send("200")
+		}
+	}catch (err){
+		console.log(err)
+		res.send("500")
 	}
-})
-router.post('/register', (req, res) => {
-	User.findOne({"email": req.body.email}).then(result =>{
-		console.log(result)
-		if(result){
-			console.log("Email already exists")
-			res.send("409")
-		} else{
-			var user = new User({"email": req.body.email, "password": req.body.pass, "admin":false})
-			user.save().then( () => {
-				console.log("User Saved")
-				res.send("200")
-			})
 			
-	}
-})
-})
+	})
 
 module.exports = router

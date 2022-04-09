@@ -1,7 +1,10 @@
 <%- include('partials/header') -%>
 
 <h1> Login </h1>
-<form id="registerForm">
+<% if(messages.error) { %>
+	<%= messages.error %>
+	<% } %>
+<form id="loginForm">
 	<div class="mb-3">
 		<label for="InputEmail" class="form-label">Email address</label>
 		<input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
@@ -20,8 +23,8 @@
 	console.log(email)
 	$.post("", {"email": email, "pass": pass},function(data, status, jqXHR){
 		console.log(status)
-		if(status="success"){
-			window.location = "../../"
+		if(status == "success"){
+			console.log("it works")
 		}
 	})
 }	
@@ -32,7 +35,7 @@
 	window.addEventListener("load", function () {
 	   //not jquery!
 	   // Access the form element...
-	   var form = document.getElementById("registerForm");
+	   var form = document.getElementById("loginForm");
 	   
 	   // ...and take over its submit event.
 	   form.addEventListener("submit", function (event) {

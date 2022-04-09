@@ -1,7 +1,6 @@
-<% if(typeof email === 'undefined') {email="Log In"} %>
 <%- include('partials/header', {email: email}); -%>
 
 
-	<h1> Home </h1>
+	<h1> Hello <% email %> </h1>
 
 <%- include('partials/footer') -%>

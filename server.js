@@ -3,36 +3,58 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 const cookieParser = require('cookie-parser')
-const sessions = require('express-session')
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const bodyParser = require("body-parser");
+const passport = require('passport')
+const flash = require('express-flash')
+const session = require('express-session')
 const accounts = require('./routes/accountRoutes');
-const db = require('./util/db')
+const methodOverride = require('method-override')
 const day = 1000*60*60*24;
 
+const initializePassport = require('./configs/passport-config');
+const user = require('./models/User');
+initializePassport(passport,
+  email => user.findOne({"email": email}),
+  id => user.findOne({"_id": id}))
+
+
 //https://www.section.io/engineering-education/session-management-in-nodejs-using-expressjs-and-express-session/
-app.use(sessions({secret: process.env.SECRETKEY, saveUninitialized:true,cookie:{maxAge:day},resave:false}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-//app.use(express.static(__dirname));
+app.use(flash())
+app.use(session({
+  secret: process.env.SECRETKEY,
+  resave: false,
+  saveUninitialized: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(methodOverride('_method'))
+
 app.use(cookieParser())
 
-app.route('/').get(function(req,res){
-  if (req.session.userid){
-    res.render('index', {"email": session.userid})
-  } else{
-    res.render('index')
-  }
+app.route('/').get(checkAuthenticated, function(req,res){
+  console.log(typeof(req.user))
+  res.render('index', {"email": req.user.email})
 })
+
+function checkAuthenticated(req, res, next){
+  if (req.isAuthenticated()){
+    return next()
+  }
+  console.log(typeof(req))
+  res.redirect('/accounts/login')
+}
 
 app.use('/accounts', accounts)
 
-db.connect( () =>{
-  app.listen(PORT)
-  console.log('Express Server running on port ' + PORT);
-})
+app.listen(PORT)
+console.log('Express Server running on port ' + PORT);
+
 
