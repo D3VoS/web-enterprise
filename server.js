@@ -11,6 +11,7 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const accounts = require('./routes/accountRoutes');
+const comments = require('./routes/commentsRoutes')
 const methodOverride = require('method-override')
 const day = 1000*60*60*24;
 
@@ -52,6 +53,7 @@ function checkAuthenticated(req, res, next){
 }
 
 app.use('/accounts', accounts)
+app.use('/comments', comments)
 
 app.listen(PORT)
 console.log('Express Server running on port ' + PORT);

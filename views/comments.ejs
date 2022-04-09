@@ -1,0 +1,43 @@
+<%- include('partials/header', {result: result}); -%>
+
+
+	<h1> Comments </h1>
+	
+	<% comments.forEach((comment) =>{ %>
+		<%= comment.content %>
+		<%= comment.createdBy %>
+		<% if(user._id.equals(comment.createdBy)){ %>
+			<button type="submit" class="btn btn-danger" onclick="deleteComment('<%= comment._id %>');"> Delete Comment </button>
+		<% } %>
+		<br>
+		<% }) %>
+
+
+	<form id="addCommentForm">
+		<label for="InputContent" class="form-label">Comment</label>
+			<input type="text" class="form-control" id="InputContent" minlength="2">
+		<button type="submit" class="btn btn-info" onclick="addComment();">Post Comment</button>
+	</form>
+
+
+	<script>
+		function addComment(){
+		content = document.getElementById("InputContent").value
+		$.post("", {"message": "add", "content": content}, function(data, status,jqXHR){
+			if (data === "success"){
+				console.log("Comment posted")
+				window.location = "/comments"
+			}
+		})}
+
+		function deleteComment(id){
+			console.log("delete")
+			$.post("", {"message": "delete", "id": id}, function(data, status, jqXHR){
+				if (data == "success"){
+					console.log("comment deleted")
+					window.location = "/comments"
+				}
+			})
+		}
+	</script>	
+<%- include('partials/footer') -%>
