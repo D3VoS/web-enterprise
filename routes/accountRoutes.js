@@ -44,6 +44,16 @@ router.get('/profile',checkAuthenticated, async (req,res) =>{
 	res.render('profile', {"email": result})
 })
 
+router.post('/profile', checkAuthenticated, async (req, res) =>{
+	if (req.body.message === "delete"){
+		result = await req.user.exec()
+		await User.deleteOne({"_id":result._id})
+		console.log("User deleted")
+		req.session.destroy();
+		res.redirect('/')
+	}
+})
+
 router.get('/logout', (req,res)=>{
 	req.session.destroy();
 	res.redirect('/')
