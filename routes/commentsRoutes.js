@@ -14,7 +14,7 @@ function checkAuthenticated(req, res, next){
   }
 
 router.get('/', checkAuthenticated, async (req, res) =>{
-	comments = await Comment.find({})
+	comments = await Comment.find({}).populate({'path': 'createdBy', 'select': 'displayName _id'})
 	user = await req.user.exec()
 	res.render("comments", {"comments": comments, "user": user})
 })
@@ -29,6 +29,10 @@ router.post('/', checkAuthenticated, async (req,res) =>{
 	} else if (req.body.message === "delete"){
 		await Comment.deleteOne({"_id": req.body.id})
 		console.log("Comment Deleted")
+		res.send("success")
+	} else if(req.body.message === "update"){
+		console.log("here")
+		await Comment.findOneAndUpdate({"_id": req.body._id}, {"content": req.body.content, "updatedAt": Date.now()})
 		res.send("success")
 	}
 })

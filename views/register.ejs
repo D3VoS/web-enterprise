@@ -13,7 +13,7 @@
 		</div>
 		<div class="mb-3">
 			<label for="InputDisplayName" class="form-label">Display Name</label>
-			<input type="text" class="form-control" id="InputDisplayName">
+			<input type="text" class="form-control" id="InputDisplayName" minlength="2">
 		</div>
 		<button type="submit" class="btn btn-primary" onclick="SendReq();">Submit</button>
 	</form>
@@ -21,20 +21,25 @@
 <script>
 	// :TODO Add check for email/password length to avoid sending null or bad passwords
 	function SendReq(){
-	email = document.getElementById("InputEmail").value;
-	pass = document.getElementById("InputPassword").value;
-	displayName = document.getElementById("InputDisplayName").value;
-	$.post("", {"email": email, "pass": pass, "displayName": displayName},function(data, status, jqXHR){
-		console.log(status)
-		if(data == "200"){
-			alert("Account Registered")
-			window.location = "/accounts/login"
-		} else if (data == "409"){
-			alert("Email is already in use, log in instead")
-		} else if (data == "500"){
-			alert("Internal System Error")
-		}
-	})
+	count = $('#InputDisplayName').val().length
+	console.log(count)
+	if(count >=2){
+		console.log("Client Side: User Registration Process Started")
+		email = document.getElementById("InputEmail").value;
+		pass = document.getElementById("InputPassword").value;
+		displayName = document.getElementById("InputDisplayName").value;
+		$.post("", {"email": email, "pass": pass, "displayName": displayName},function(data, status, jqXHR){
+			console.log(status)
+			if(data == "200"){
+				alert("Account Registered")
+				window.location = "/accounts/login"
+			} else if (data == "409"){
+				alert("Email is already in use, log in instead")
+			} else if (data == "500"){
+				alert("Internal System Error")
+			}
+		})
+	}
 }	
 </script>
 

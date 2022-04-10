@@ -1,0 +1,43 @@
+<%- include('partials/header', {result: result}); -%>
+
+
+	<h1> Events </h1> <% if(user.admin) {%> <button type="submit" class="btn btn-success" onclick="adminPage();"> Admin Menu </button> <% } %>
+	
+	<% events.forEach((e) =>{ %>
+		<div class="alert alert-success" role="alert">
+			<h4 class="alert-heading"><%= e.title %></h4>
+			<p><%= e.content %></p>
+			<hr>
+		<% if(true){ %>
+		<button type="submit" class="btn btn-success" onclick="joinEvent('<%= e._id %>');"> Join Event </button>
+		<% } else { %>
+		<button type="submit" class="btn btn-danger" onclick="leaveEvent('<%= e._id %>');"> Leave Event </button>
+		<% } %>
+		</div>
+	<% }) %>
+
+<script>
+	function joinEvent(id){
+		console.log(id)
+		$.post('', {'message' : 'Join', 'id':id}, function(data, status, jqXHR){
+			console.log(status)
+			if(data === "success"){
+				window.location = '/events'
+			}
+		})
+	}
+
+	function leaveEvent(id){
+		$.post('', {'message': 'Leave', 'id':id}, function(data, status, jqXHR){
+			console.log(status)
+			if(data === "success"){
+				window.location = '/events'
+			}
+		})
+	}
+
+	function adminPage(){
+		window.location = '/events/admin'
+	}
+</script>
+<%- include('partials/footer') -%>

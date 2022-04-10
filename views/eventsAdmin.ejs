@@ -1,0 +1,171 @@
+<%- include('partials/header', {result: result}); -%>
+
+
+<button type="button" class="btn btn-success" onclick="startCreateEvent()">Create New Event</button>
+<% if (events) {%>
+<% events.forEach((e) =>{%>
+	<div class="alert alert-success" role="alert">
+		<h4 class="alert-heading"><%= e.title %></h4>
+		<p><%= e.content %></p>
+		<hr>
+		<p class="mb-0"><%= e.attending.length %> People Attending</p>
+	<button type="submit" class="btn btn-danger" onclick="startDeleteModal('<%= e._id %>', '<%= e.title %>', '<%= e.content %>');"> Delete Event </button>
+	<button type="submit" class="btn btn-secondary" onclick="startEditModal('<%= e._id %>', '<%= e.title %>', '<%= e.content %>') "> Edit Event</button>
+</div>
+	<% })} %>
+<div class="modal" id="CreateModel" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Create Event</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body">
+			<form id="CreateEventForm">
+				<label for="InputEventTitle" class="form-label">Title</label>
+					<input type="text" class="form-control" id="InputEventTitle" minlength="2">
+					<label for="InputEventContent" class="form-label">Title</label>
+					<input type="text" class="form-control" id="InputEventContent" minlength="2">
+					<button type="submit" class="btn btn-secondary" onclick="createNewEvent()"> Create Event </button>
+			</form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="stopCreateEvent()">Close</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+
+<div class="modal" id="UpdateModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Update Event</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body">
+			<form id="updateEventForm">
+				<label for="InputUpdateEvent" class="form-label">Event</label>
+					<input type="text" class="form-control" id="InputUpdateEventTitle" minlength="2">
+					<input type="text" class="form-control" id="InputUpdateEventContent" minlength="2">
+					<input type="text" class="form-control" id="InputUpdateEventId" disabled>
+					<button type="submit" class="btn btn-secondary" onclick="updateEvent();"> Update Event </button>
+			</form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <div class="modal" id="DeleteModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Delete Event</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body">
+			<form id="DeleteEventForm">
+				<label for="DeleteEventTitle" class="form-label">Event</label>
+					<input type="text" class="form-control" id="DeleteEventTitle" minlength="2" disabled>
+					<input type="text" class="form-control" id="DeleteEventContent" minlength="2" disabled>
+					<input type="text" class="form-control" id="DeleteEventId" disabled>
+					<button type="submit" class="btn btn-secondary" onclick="deleteEvent();"> Delete Event </button>
+			</form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <script>
+	  function startCreateEvent(){
+		  $('#CreateModel').modal('show')
+	  }
+	  function stopCreateEvent(){
+		$('#CreateModel').modal('hide')
+	  }
+
+	  function createNewEvent(){
+		  title = $('#InputEventTitle').val()
+		  content = $('#InputEventContent').val()
+		  if (title.length >= 2 && content.length >= 2){
+			  $.post('', {"message": "create", "title": title, "content": content}, function(data, status, jqXHR){
+				  if(data === "success"){
+				  	window.location = '/events/admin'
+				  }
+				  else{
+					  console.log("Something has went wrong " + status)
+				  }
+			  })
+		  }
+	  }
+
+	  function updateEvent(){
+		title = $('#InputUpdateEventTitle').val()
+		content = $('#InputUpdateEventContent').val()
+		id = $('#InputUpdateEventId').val()
+		if (title.length >= 2 && content.length >= 2){
+			$.post('', {"message":"update", "title": title, "content": content, "id": id}, function(data, status, jqXHR){
+				if(data === "success"){
+					window.location = '/events/admin'
+				} else{
+					console.log("Something has went wrong " + status)
+				}
+			})
+		}
+	  }
+
+	  function deleteEvent(){
+		  id = $('#DeleteEventId').val()
+		  $.post('', {"message": "delete", "id": id}, function(data, status, jqXHR){
+			  if(data === "success"){
+				  window.location = '/events/admin'
+			  } else {
+				  console.log("Something has went wrong " + status)
+			  }
+		  })
+	  }
+	  function startEditModal(id, title, content){
+		  $('#UpdateModal').modal('show')
+		  $('#InputUpdateEventTitle').val(title)
+		  $('#InputUpdateEventContent').val(content)
+		  $('#InputUpdateEventId').val(id)
+	  }
+
+	  function startDeleteModal(id, title, content){
+		  $('#DeleteModal').modal('show')
+		  $('#DeleteEventTitle').val(title)
+		  $('#DeleteEventContent').val(content)
+		  $('#DeleteEventId').val(id)
+	  }
+  </script>
+
+<script>
+	//Fix for page reload found https://stackoverflow.com/questions/38374549/xhr-failed-loading-post
+	window.addEventListener("load", function () {
+	   //not jquery!
+	   // Access the form element...
+	   var form = document.getElementById("updateEventForm");
+	   
+	   // ...and take over its submit event.
+	   form.addEventListener("submit", function (event) {
+		   event.preventDefault(); // prevent form submission and reloading the page.
+   
+		   //your code to validate or do what you need with the form.
+	   });
+   });
+   </script>
+
+<%- include('partials/footer') -%>

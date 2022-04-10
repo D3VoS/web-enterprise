@@ -4,11 +4,20 @@
 	<h1> Comments </h1>
 	
 	<% comments.forEach((comment) =>{ %>
-		<%= comment.content %>
-		<%= comment.createdBy %>
-		<% if(user._id.equals(comment.createdBy)){ %>
+		<div class="card" style="width: 18rem;">
+			<div class="card-body">
+			  <h6 class="card-subtitle mb-2 text-muted">By <%= comment.createdBy.displayName %></h6>
+			  <p class="card-text"><%= comment.content %></p>
+			
+			
+		
+		
+		<% if(user._id.equals(comment.createdBy._id) || user.admin){ %>
 			<button type="submit" class="btn btn-danger" onclick="deleteComment('<%= comment._id %>');"> Delete Comment </button>
+			<button type="submit" class="btn btn-secondary" onclick="openModal('<%= comment._id %>', '<%= comment.content %>') "> Edit Comment</button>
 		<% } %>
+	</div>
+</div>
 		<br>
 		<% }) %>
 
@@ -19,6 +28,30 @@
 		<button type="submit" class="btn btn-info" onclick="addComment();">Post Comment</button>
 	</form>
 
+	<div class="modal" id="EditModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Update Comment</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+				<form id="updateCommentForm">
+					<label for="InputUpdateComment" class="form-label">Comment</label>
+						<input type="text" class="form-control" id="InputUpdateComment" minlength="">
+						<input type="text" class="form-control" id="CommentID" disabled>
+						<button type="submit" class="btn btn-secondary" onclick="updateComment();"> Update Comment </button>
+				</form>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary">Save changes</button>
+			  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		  </div>
+		</div>
+	  </div>
 
 	<script>
 		function addComment(){
@@ -38,6 +71,26 @@
 					window.location = "/comments"
 				}
 			})
+		}
+
+		function updateComment(){
+			id = $('#CommentID').val()
+			content = $('#InputUpdateComment').val()
+			console.log(id)
+			console.log(content)
+			$.post("", {"message":"update", "_id": id, "content": content}, function(data, status, jqXHR){
+				if ( data == "success"){
+					console.log("Comment Edited")
+					window.location = "/comments"
+				}
+			})
+		}
+
+		function openModal(id, content){
+			$('#EditModal').modal("show");
+			$('#InputUpdateComment').val(content)
+			$('#CommentID').val(id)
+
 		}
 	</script>	
 <%- include('partials/footer') -%>
