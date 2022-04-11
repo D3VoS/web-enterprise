@@ -15,11 +15,9 @@ function checkAuthenticated(req, res, next){
 
 
 router.get('/', checkAuthenticated, async (req, res) =>{
-	events = await Event.find({})
 	user = await req.user.exec()
-	joinedEvents = await Event.find({"attending": user._id})
-	console.log("Attending" + joinedEvents)
-	res.render("events", {"events": events, "user": user, "joinedEvents": joinedEvents})
+	events = await Event.find({"attending": {"$ne": user._id}})
+	res.render("events", {"events": events, "user": user})
 })
 
 router.post('/', checkAuthenticated, async (req, res) =>{
@@ -32,6 +30,19 @@ router.post('/', checkAuthenticated, async (req, res) =>{
 	}
 })
 
+router.get('/my', checkAuthenticated, async (req, res) =>{
+	events = await Event.find({"attending": user._id})
+	res.render("eventMy", {"events": events})
+})
+
+router.post('/my', checkAuthenticated, async (req, res) =>{
+	if(req.body.message === "Leave"){
+		user = await req.user.exec()
+		ev = await Event.findOneAndUpdate({"_id": req.body.id}, {"$pull": {attending: user._id}}, {new:true})
+		console.log(ev)
+		res.send("success")
+	}
+})
 router.get('/admin', checkAuthenticated, async(req, res) =>{
 	user = await req.user.exec()
 	if(user.admin){

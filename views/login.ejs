@@ -25,7 +25,10 @@
 	$.post("", {"email": email, "pass": pass},function(data, status, jqXHR){
 		console.log(status)
 		if(status == "success"){
+			alert("logged in")
 			window.location = "/"
+		}else if(status === 401){
+			alert("Incorrect Username / Password")
 		}
 	})
 }	

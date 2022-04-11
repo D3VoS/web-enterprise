@@ -13,8 +13,7 @@ const session = require('express-session')
 const accounts = require('./routes/accountRoutes');
 const comments = require('./routes/commentsRoutes')
 const events = require('./routes/eventRoutes')
-const methodOverride = require('method-override')
-const day = 1000*60*60*24;
+
 
 const initializePassport = require('./configs/passport-config');
 const user = require('./models/User');
@@ -49,7 +48,6 @@ function checkAuthenticated(req, res, next){
   if (req.isAuthenticated()){
     return next()
   }
-  console.log(typeof(req))
   res.redirect('/accounts/login')
 }
 

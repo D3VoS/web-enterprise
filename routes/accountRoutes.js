@@ -4,8 +4,10 @@ const mongoose = require("mongoose")
 const User = require('../models/User')
 const bcrypt = require('bcrypt');
 const passport = require('passport')
-const pass = process.env.DBPASS
-mongoose.connect("mongodb+srv://webenterprise:"+pass+"@cluster0.4kxvc.mongodb.net/webenterprise?retryWrites=true&w=majority",()=>{
+mongoose.connect(process.env.MONGO_URL,(err)=>{
+	if (err){
+		console.log(err)
+	}
 	console.log("Database Connected")
 })
 
@@ -34,7 +36,6 @@ router.get('/login', checkNotAuthenticated, (req,res) =>{
 
 router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 	successRedirect: '/',
-	failureRedirect: '/accounts/login',
 	failureFlash: true
 	}));
 

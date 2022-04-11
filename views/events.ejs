@@ -1,7 +1,7 @@
 <%- include('partials/header', {result: result}); -%>
 
 
-	<h1> Events </h1> <% if(user.admin) {%> <button type="submit" class="btn btn-success" onclick="adminPage();"> Admin Menu </button> <% } %>
+	<h1> Events </h1> <% if(user.admin) {%> <button type="submit" class="btn btn-success" onclick="adminPage();"> Admin Menu </button> <% } %> <button type="submit" class="btn btn-success" onclick="myEvents();">My Events</button>
 	
 	<% events.forEach((e) =>{ %>
 		<div class="alert alert-success" role="alert">
@@ -38,6 +38,10 @@
 
 	function adminPage(){
 		window.location = '/events/admin'
+	}
+
+	function myEvents(){
+		window.location = '/events/my'
 	}
 </script>
 <%- include('partials/footer') -%>
