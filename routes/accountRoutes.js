@@ -4,9 +4,10 @@ const mongoose = require("mongoose")
 const User = require('../models/User')
 const bcrypt = require('bcrypt');
 const passport = require('passport')
-mongoose.connect(process.env.MONGO_URL,(err)=>{
+const pass = process.env.DBPASS
+const username = process.env.DBUSER
+mongoose.connect("mongodb+srv://"+username+":"+pass+"@cluster0.4kxvc.mongodb.net/webenterprise?retryWrites=true&w=majority",(err)=>{
 	if (err){
-		console.log(process.env.MONGO_URL)
 		console.log(err)
 	}
 	console.log("Database Connected")
