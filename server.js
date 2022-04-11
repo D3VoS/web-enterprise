@@ -21,19 +21,20 @@ initializePassport(passport,
   email => user.findOne({"email": email}),
   id => user.findOne({"_id": id}))
 
-
-//https://www.section.io/engineering-education/session-management-in-nodejs-using-expressjs-and-express-session/
+// Sets up EJS as our templating engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+// Makes it so the req.body is easily accessible in a json format
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+// Allows sessions to be held.
 app.use(flash())
 app.use(session({
   secret: process.env.SECRETKEY,
   resave: false,
   saveUninitialized: false
 }))
-
+// The main driver of authentication on the site
 app.use(passport.initialize())
 app.use(passport.session())
 

@@ -13,7 +13,7 @@ mongoose.connect("mongodb+srv://"+username+":"+pass+"@cluster0.4kxvc.mongodb.net
 	console.log("Database Connected")
 })
 
-
+// Simple Auth Decorator like function
 function checkAuthenticated(req, res, next){
 	if (req.isAuthenticated()){
 		console.log("User Authed")
@@ -22,7 +22,7 @@ function checkAuthenticated(req, res, next){
   
 	return res.redirect('/accounts/login')
   }
-
+// Same as above but in reverse, checking if user is not authed (logged in)
 function checkNotAuthenticated(req, res, next){
 	if (req.isAuthenticated()){
 		
@@ -35,7 +35,7 @@ function checkNotAuthenticated(req, res, next){
 router.get('/login', checkNotAuthenticated, (req,res) =>{
 	res.render('login');
   });
-
+// passport used to with local strategy, see config/passport-config.js
 router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 	successRedirect: '/',
 	failureFlash: true
@@ -73,6 +73,7 @@ router.get('/register', checkNotAuthenticated, (req,res) => {
 })
 router.post('/register', checkNotAuthenticated, async (req, res) => {
 	try{
+		// Checks if email is already taken
 	result = await User.findOne({"email": req.body.email})
 	if(result){
 		console.log("Email already exists")
@@ -81,6 +82,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
 		// Salts and hashes the password to ensure that it is not in plain text or easily crackable.
 		const hashedPassword = await bcrypt.hash(req.body.pass, 10)
 		var user = await new User({"email": req.body.email, "password": hashedPassword, "displayName": req.body.displayName})
+		// Creates and saves the user
 		await user.save()
 		console.log("User Saved")
 		res.send("200")
