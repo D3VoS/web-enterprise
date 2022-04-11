@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport')
 mongoose.connect(process.env.MONGO_URL,(err)=>{
 	if (err){
+		console.log(process.env.MONGO_URL)
 		console.log(err)
 	}
 	console.log("Database Connected")
