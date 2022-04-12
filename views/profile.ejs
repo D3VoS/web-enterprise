@@ -1,6 +1,7 @@
 <%- include('partials/header', {result: result}); -%>
-
-
+	<% if(result.admin){ %>
+	<button type="button" class="btn btn-info" onclick="unbanMenu()">Unban Menu</button>
+	<% } %>
 	<h1> <%= result.displayName %>'s Profile </h1>
 
 	<br>
@@ -11,24 +12,27 @@
 	Last Updated: <%= result.updatedAt %>
 	<br>
 	<br>
+	<% if(result.banned) {%> You have been banned, Reason: <%= result.bannedReason %> <% }%>
 	<br>
+	<% if (!result.banned) { %>
 	<form id="updateForm">
 		<label for="InputDisplayName" class="form-label">Display Name</label>
 			<input type="text" class="form-control" id="InputDisplayName">
-		<button type="submit" class="btn btn-info" onclick="updateDisplayName();">Update Display Name</button>
+		<button type="button" class="btn btn-info" onclick="updateDisplayName();">Update Display Name</button>
 	</form>
+	<% } %>
 	<br>
 	<form id="deleteForm">
-		<button type="submit" class="btn btn-danger" onclick="deleteAccount();">Delete my account</button>
+		<button type="button" class="btn btn-danger" onclick="deleteAccount();">Delete my account</button>
 	</form>
 
 
 	<script> function deleteAccount() {
 		$.post("", {"message":"delete"},function(data, status, jqXHR){
 			console.log(status)
-			if(status == "success"){
+			if(data == "success"){
 				alert("Your account has been sucessfully deleted")
-				window.location.replace = "/"
+				window.location = "/accounts/login"
 			}
 		}
 		)}
@@ -41,6 +45,10 @@
 					window.location.reload()
 				}
 			})
+		}
+
+		function unbanMenu(){
+			window.location = '/accounts/admin'
 		}
 		</script>
 <%- include('partials/footer') -%>

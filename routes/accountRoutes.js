@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const mongoose = require("mongoose")
 const User = require('../models/User')
+const Comment = require('../models/Comment')
+const Event = require('../models/Event')
 const bcrypt = require('bcrypt');
 const passport = require('passport')
 const pass = process.env.DBPASS
@@ -50,10 +52,14 @@ router.get('/profile',checkAuthenticated, async (req,res) =>{
 router.post('/profile', checkAuthenticated, async (req, res) =>{
 	if (req.body.message === "delete"){
 		result = await req.user.exec()
-		await User.deleteOne({"_id":result._id})
-		console.log("User deleted")
 		req.logout()
-		res.status(200).send("success")
+		await User.deleteOne({"_id":result._id})
+		await Event.updateMany({}, {"$pullAll": {"attending":[{"_id":result._id}]}})
+		await Comment.deleteMany({"createdBy": result._id})
+		console.log("User deleted")
+		res.send("success")
+		
+		
 	} else if (req.body.message === "update"){
 		result = await req.user.exec()
 		doc = await User.findOneAndUpdate({"_id": result._id}, {"displayName": req.body.displayName, "updatedAt": Date.now()}, {new: true})
@@ -91,7 +97,28 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
 		console.log(err)
 		res.send("500")
 	}
+})
+
+router.get('/admin', checkAuthenticated, async(req, res) =>{
+	user = await req.user.exec()
+	if(user.admin){
+		bannedUsers = await User.find({"banned": true})
+		res.render("admin", {"bannedUsers": bannedUsers})
+	} else{
+		res.redirect("/")
+	}
+})
+
+router.post('/admin', checkAuthenticated, async(req, res) =>{
+	user = await req.user.exec()
+	if(user.admin){
+		await User.updateOne({"_id": req.body.id}, {"banned": false, "bannedReason": " "})
+		res.send("success")
+	} else{
+		res.redirect("/")
+	}
+})
 			
-	})
+	
 
 module.exports = router

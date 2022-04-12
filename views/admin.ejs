@@ -1,0 +1,28 @@
+<%- include('partials/header', {result: result}); -%>
+
+
+	<h1> Banned Users </h1>
+	
+	<% bannedUsers.forEach((user) =>{ %>
+		<div class="card" style="width: 18rem;">
+			<div class="card-body">
+			  <h6 class="card-subtitle mb-2 text-muted"><%= user.displayName %></h6>
+			  <p class="card-text"><%= user.email %></p>
+			  <p class="card-text">Ban Reason: <%= user.bannedReason %></p>
+			<button type="button" class="btn btn-success" onclick="unbanUser('<%= user._id %>');"> Unban User </button>
+		<% }) %>
+	</div>
+</div>
+		<br>
+
+
+	<script>
+		function unbanUser(id){
+			$.post("", {"message": "unban", "id": id}, function(data, status, jqXHR){
+				if(data === "success"){
+					window.location.reload()
+				}
+			})
+		}
+	</script>	
+<%- include('partials/footer') -%>
